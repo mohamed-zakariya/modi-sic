@@ -1,10 +1,13 @@
 import dic as d
+
+####
+start_t_record={}
 def get_H_record(Hline):
     title = Hline[0][1:7]
     # print(title)
     programName = ""
-    flag = 1;
-    first = 1;
+    flag = 1
+    first = 1
     for letter in reversed(title):
         # print(programName)
         if letter != 'X' and first == 1:
@@ -33,13 +36,13 @@ def get_H_record(Hline):
     # print(start)
     # print(end)
     return [programName, start, end]
-    
+#####   
 def check_Format1(opCode):
     return opCode in d.opcode_1
-
+####
 def check_dic(opCode):
     return opCode in d.opcode_3
-
+#####
 def check_imd(opCode):
   bit8 = bin(int(opCode, 16)).upper()
   bit8 = bit8[-1]
@@ -68,11 +71,11 @@ def save_objectCodes(tline):
             counter += 1
 
         i += 1
-    print(objectCodes) 
+    #print(objectCodes) 
     return   counter     
     
 
-
+#####
 def get_trecord_objectCode3(tline, j):
     objcodes = tline[j][9:-1]
     
@@ -95,7 +98,7 @@ def get_trecord_objectCode3(tline, j):
     # print(objcode_3)        
     return objcode_3
     # print(objcode_1, '@', objcode_3)
-
+#####
 def get_trecord_symbolTable(tline, symbolTable, j, m):
     address = get_trecord_objectCode3(tline, j)
     # print(objCode)
@@ -112,6 +115,33 @@ def get_trecord_symbolTable(tline, symbolTable, j, m):
             m = m + 1 
 
     return m                
+def get_start_len(tline):
+    
+     i = 1
+     j = 0
+     while i < len(tline)-1:
+        res = tline[i]
+        j = 0
+        while j < len(res):
+   
+       
+            #start_t_record=res[1:6]
+            start_t_record[res[1:7]]= res[7:9]
+            j+=1
+        i+=1
+     return start_t_record
+
+def get_diff(start_t_record):
+    for i in range (len(start_t_record)):
+        if(hex(int(start_t_record[i+1],16)-int(start_t_record[i],16)) not in start_t_record[i]):
+            return start_t_record[i],start_t_record[i+1]
+
+
+
+
+#def get_res(lines):
+    
+   
 
 
 
@@ -124,10 +154,10 @@ def get_assembly_code(hrecord):
     pointerLC = pointerLC[2:]
     end = hrecord[2]
     locationCounter.append(pointerLC)
-    print(pointerLC)
+    #print(pointerLC)
     # pointerLC = hex(int(pointerLC, 16) +3)
     # pointerLC = pointerLC[2:]
-    print(end)
+    #print(end)
 
 
     counter = save_objectCodes(lines)
@@ -135,7 +165,10 @@ def get_assembly_code(hrecord):
     i = 0
     # pointerLC != end
     while i < counter:
-        if pointerLC not in symbolTable:
+        if get_diff(start_t_record):
+         get_res(locationCounter)
+            
+        elif pointerLC not in symbolTable :
             pointerLC = hex(int(pointerLC, 16) +3)
             pointerLC = pointerLC[2:]
             locationCounter.append(pointerLC)
@@ -152,14 +185,14 @@ def get_assembly_code(hrecord):
             locationCounter.append(pointerLC)
             
 
-        print(pointerLC)
+        #print(pointerLC)
         i += 1  
-    print(i)
+   # print(i)
     # print(locationCounter)
 
 
 
-
+######
 with open(hte_path, 'r') as file:
     content = file.read()
     # print(content[0])
@@ -170,7 +203,7 @@ with open(hte_path, 'r') as file:
     # for line in lines:
     #     print(line)
     hRecord =  get_H_record(lines)
-    # print(hRecord)
+    
     j = 1
     i = 1
     k = 1
@@ -187,19 +220,20 @@ with open(hte_path, 'r') as file:
 
     while k < len(lines)-1:
         m = get_trecord_symbolTable(lines, symbolTable, k, m)
-        k = k+1;
+        k = k+1
     
     # print(objcode_1)
     # print(objcode_3_imm)
-    print(symbolTable)
+   # print(symbolTable)
     # print(inst_ref)
 
-    print(hRecord)
+   #print(hRecord)
 
     get_assembly_code(hRecord)
 
 
-
+    get_res(lines)
+#######
 symbolTable_path = "symbolTable.txt"
 with open(symbolTable_path, 'w') as file2:
     file2.write("SYMBOLTABLE \t REFERNCES \n")
