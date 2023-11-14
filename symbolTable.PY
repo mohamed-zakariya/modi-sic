@@ -6,7 +6,6 @@ class File :
         self.hte_path = 'HTE.txt'
         self.conten=0
         self.lines=0
-        self.hRecord=0
         
          
     def open_file(self):
@@ -14,15 +13,16 @@ class File :
             self.content = file.read()
             # print(content[0])
             file.seek(0)
-            self.lines = file.readlines()      
+            self.lines = file.readlines()   
 
-            
+
 class Symbol:
     def __init__(self):
         self.symbolTable_path = "symbolTable.txt"
         self.programName=""
         self.start=0
         self.end=0
+        self.hRecord=[]
         self.length=""
         self.objectCodes = []
         self.objcode_1 = []
@@ -32,6 +32,7 @@ class Symbol:
         self.symbolTable2 = []
         self.inst_ref = {}
         self.opCode=[]
+        self.recordLimits = []
         self.ref_num=0 
 
 
@@ -63,24 +64,42 @@ class Symbol:
         self.start = int(self.start, 16)
         self.start = hex(self.start).upper()
         self.start = self.start[2:]
+
+        self.hRecord =  {
+            "programName" : self.programName,
+            "start" : self.start,
+            "end" : self.end,
+            "length" : self.length
+        }
        
 
 
     def check_Format1(self):
-
         return self.opCode in d.opcode_1
 
     def check_dic(self):
         return self.opCode in d.opcode_3
 
-    def check_imd(self,):
+    def check_imd(self):
         bit8 = bin(int(self.opCode, 16)).upper()
+        # print(self.opCode)
         bit8 = bit8[-1]
-        return bit8 == '1'
+        if bit8 == "1":
+            oc = hex(int(self.opCode, 16) - 1)
+            oc = oc[2:]
+            # print(oc)
+            return oc in d.opcode_3
+        return False
+        # print(bit8)
+
     
     def get_trecord_objectCode(self,f, j):
+        start = f.lines[j][3:7]
+        end = hex(int(start, 16) + int(f.lines[j][7:9], 16)).upper()
+        end = end[2:]
         objcodes = f.lines[j][9:-1]
         
+        self.recordLimits.append([start, end])
         i = 0
         while i < len(objcodes):
             self.opCode = objcodes[i:i+2]
@@ -89,8 +108,9 @@ class Symbol:
             if self.check_Format1():
                 self.objcode_1.append(self.opCode)
                 i = i+2
-            elif self.check_dic() and self.check_imd():
+            elif self.check_imd():
                 self.objcode_3_imm.append(objcodes[i:i+6])
+                # print(int(self.opCode, 16) -1)
                 i = i+6
             elif self.check_dic():
                 self.objcode_3.append(objcodes[i:i+6])
@@ -99,7 +119,7 @@ class Symbol:
                 i = i+6
                
             
-      
+    #   and hex(int(self.opCode, 16) -1) in d.opCode_j
 
     def get_trecord_symbolTable(self):
         
@@ -130,26 +150,28 @@ class Symbol:
 
    
 def call_objectcode(f,s):
- for i in range (1 ,len(f.lines)-1): 
-    s.get_trecord_objectCode(f,i)        
+    for i in range (1 ,len(f.lines)-1): 
+        s.get_trecord_objectCode(f,i)   
+    print(s.recordLimits)
+     
 
 
-def mainfun(f,s):
+
+# def mainfun(f,s):
    
-    f.open_file()
-    s.get_H_record(f)
-    call_objectcode(f,s)
-    s.get_trecord_symbolTable()
-    s.create_symbol_table()
+#     f.open_file()
+#     s.get_H_record(f)
+#     call_objectcode(f,s)
+#     s.get_trecord_symbolTable()
+#     s.create_symbol_table()
+#     print(s.objcode_3_imm)
+#     # print(s.inst_ref)
     
-   
-    
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
    
-        f=File()
-        s=Symbol()
+#         f=File()
+#         s=Symbol()
        
-        mainfun(f,s)
-   
+#         mainfun(f,s)   

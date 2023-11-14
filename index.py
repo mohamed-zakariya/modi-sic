@@ -154,11 +154,6 @@ def get_assembly_code(hrecord):
     pointerLC = pointerLC[2:]
     end = hrecord[2]
     locationCounter.append(pointerLC)
-    #print(pointerLC)
-    # pointerLC = hex(int(pointerLC, 16) +3)
-    # pointerLC = pointerLC[2:]
-    #print(end)
-
 
     counter = save_objectCodes(lines)
 
@@ -166,7 +161,7 @@ def get_assembly_code(hrecord):
     # pointerLC != end
     while i < counter:
         if get_diff(start_t_record):
-         get_res(locationCounter)
+            get_res(locationCounter)
             
         elif pointerLC not in symbolTable :
             pointerLC = hex(int(pointerLC, 16) +3)

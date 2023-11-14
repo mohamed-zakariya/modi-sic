@@ -34,6 +34,10 @@ opCode_j={
     "38":"JLT",
     "48":"JSUB",
 }
+opCode_wb={
+    "0C":"STA",
+    "00":"LDA",
+}
 opcode_1={
      "C4":"FIX",
     "C0":"FLOAT",
