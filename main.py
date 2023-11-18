@@ -16,10 +16,10 @@ def mainfun(f,s, assem):
     
     # print(assem.res_index)
     assem.create_assembly_lines(s)
-    print(assem.wb)    
+    # print(assem.wb)    
     # print(assem.locationCounter)
     #print(s.objectCodes_all)
-    #print(assem.assembly_lines)
+    print(assem.assembly_lines)
     # print(s.objectCodes_all)
     # print( s.inst_ref)
 if __name__ == '__main__':
