@@ -11,6 +11,7 @@ class File :
     def open_file(self):
         with open(self.hte_path, 'r') as file:
             self.content = file.read()
+            # print(content[0])
             file.seek(0)
             self.lines = file.readlines()   
 
@@ -23,7 +24,6 @@ class Symbol:
         self.end=0
         self.hRecord=[]
         self.length=""
-        self.objectCodes = []
         self.objcode_1 = []
         self.objcode_3 = []
         self.objcode_3_imm = []
@@ -33,6 +33,9 @@ class Symbol:
         self.opCode=[]
         self.recordLimits = []
         self.ref_num=0 
+        self.objectCodes=[]
+        self.objectCodes_all=[]
+        self.all_opcodes=[]
 
 
     def get_H_record(self,f):
@@ -80,13 +83,20 @@ class Symbol:
         return self.opCode in d.opcode_3
 
     def check_imd(self):
+        
         bit8 = bin(int(self.opCode, 16)).upper()
         bit8 = bit8[-1]
+       
         if bit8 == "1":
             oc = hex(int(self.opCode, 16) - 1)
+           
             oc = oc[2:]
+            oc = oc.zfill(2)
+           
+           
             return oc in d.opcode_3
         return False
+        
 
     
     def get_trecord_objectCode(self,f, j):
@@ -99,20 +109,31 @@ class Symbol:
         i = 0
         while i < len(objcodes):
             self.opCode = objcodes[i:i+2]
+           
+            # print(opCode, ' ->', i, '->', )
 
             if self.check_Format1():
+                self.objectCodes_all.append(self.opCode)
                 self.objcode_1.append(self.opCode)
+                self.all_opcodes.append(objcodes[i:i+2])
                 i = i+2
             elif self.check_imd():
+               
+                self.objectCodes_all.append(objcodes[i:i+6])
                 self.objcode_3_imm.append(objcodes[i:i+6])
+                self.all_opcodes.append(objcodes[i:i+2])
+                # print(int(self.opCode, 16) -1)
                 i = i+6
             elif self.check_dic():
+                self.objectCodes_all.append(objcodes[i:i+6])
                 self.objcode_3.append(objcodes[i:i+6])
+                self.all_opcodes.append(objcodes[i:i+2])
                 i = i+6
             else:
                 i = i+6
                
             
+    #   and hex(int(self.opCode, 16) -1) in d.opCode_j
 
     def get_trecord_symbolTable(self):
         
@@ -138,11 +159,8 @@ class Symbol:
         
 
     
-                
-
    
 def call_objectcode(f,s):
     for i in range (1 ,len(f.lines)-1): 
         s.get_trecord_objectCode(f,i)   
-    print(s.recordLimits)
      

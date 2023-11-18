@@ -59,6 +59,7 @@ def save_objectCodes(tline):
         objcodes = tline[i][9:-1]
         j = 0
         while j < len(objcodes):
+        # print(opCode, ' ->', i, '->', )
             opCode = objcodes[j:j+2]
             if check_Format1(opCode):
                 objectCodes.append(objcodes[j:j+2])
@@ -81,6 +82,7 @@ def get_trecord_objectCode3(tline, j):
     i = 0
     while i < len(objcodes):
         opCode = objcodes[i:i+2]
+        # print(opCode, ' ->', i, '->', )
 
         if check_Format1(opCode):
             objcode_1.append(opCode)
@@ -93,9 +95,13 @@ def get_trecord_objectCode3(tline, j):
             i = i+6
         else:
             i = i+6
+    # print(objcode_3)        
     return objcode_3
+    # print(objcode_1, '@', objcode_3)
+#####
 def get_trecord_symbolTable(tline, symbolTable, j, m):
     address = get_trecord_objectCode3(tline, j)
+    # print(objCode)
     symbolTable2 = []
     for i in range(0, len(address)):
         symbolTable2.append(address[i][2:])

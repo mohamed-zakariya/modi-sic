@@ -25,7 +25,6 @@ opcode_3={
     "E0":"TD",
     "2C":"TIX",
     "DC":"WD",
-   
 }
 opCode_j={
     "3C":"J",
@@ -34,12 +33,9 @@ opCode_j={
     "38":"JLT",
     "48":"JSUB",
 }
-opCode_wb={
-    "0C":"STA",
-    "00":"LDA",
-}
+
 opcode_1={
-     "C4":"FIX",
+    "C4":"FIX",
     "C0":"FLOAT",
     "F4":"HIO",
     "C8":"NORM",
