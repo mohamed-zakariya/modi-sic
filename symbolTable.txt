@@ -9,13 +9,10 @@ SYMBOLTABLE 	 REFERNCES
 102A 			 ref7 
 1039 			 ref8 
 102D 			 ref9 
-0000 			 ref10 
-0003 			 ref11 
 205D 			 ref12 
 203F 			 ref13 
 2057 			 ref14 
 9039 			 ref15 
 205E 			 ref16 
-1000 			 ref17 
-2079 			 ref18 
+E020 			 ref18 
 2064 			 ref19 

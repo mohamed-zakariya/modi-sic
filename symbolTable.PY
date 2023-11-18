@@ -107,30 +107,35 @@ class Symbol:
         
         self.recordLimits.append([start, end])
         i = 0
+        notDefine = 0
+        byte = ""
         while i < len(objcodes):
             self.opCode = objcodes[i:i+2]
            
             # print(opCode, ' ->', i, '->', )
 
-            if self.check_Format1():
+            if self.check_Format1() and notDefine == 0:
                 self.objectCodes_all.append(self.opCode)
                 self.objcode_1.append(self.opCode)
                 self.all_opcodes.append(objcodes[i:i+2])
                 i = i+2
-            elif self.check_imd():
-               
+            elif self.check_imd() and notDefine == 0:
+                print(objcodes[i:i+6],"-> ", "imm")
+
                 self.objectCodes_all.append(objcodes[i:i+6])
                 self.objcode_3_imm.append(objcodes[i:i+6])
                 self.all_opcodes.append(objcodes[i:i+2])
                 # print(int(self.opCode, 16) -1)
                 i = i+6
-            elif self.check_dic():
+            elif self.check_dic() and notDefine == 0:
+                print(objcodes[i:i+6],"-> ", "dic   ")
                 self.objectCodes_all.append(objcodes[i:i+6])
                 self.objcode_3.append(objcodes[i:i+6])
                 self.all_opcodes.append(objcodes[i:i+2])
                 i = i+6
             else:
                 i = i+6
+
                
             
     #   and hex(int(self.opCode, 16) -1) in d.opCode_j
