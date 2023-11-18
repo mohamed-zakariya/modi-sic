@@ -19,6 +19,7 @@ class assembly:
         self.reswb = []
         self.res_index=[]
         self.wb_values = []
+
    
     
     def save_objectCodes(self, s):
@@ -36,7 +37,6 @@ class assembly:
             else:
                 diff = int(self.reswb[0][1], 16) - int(self.reswb[0][0], 16)
                 
-
             self.reswb.pop(0)
             return diff
         diff = int(self.reswb[0][1], 16) - int(self.reswb[0][0], 16)
@@ -66,7 +66,6 @@ class assembly:
     def get_res_index(self):
         self.res_index=[sublist[0] for sublist in self.reswb]    
 
-    # set the values of reswb
     def check_res(self, target_value):
         i = 0
         while i < len(self.reswb):
@@ -74,7 +73,7 @@ class assembly:
                 return False
             i += 1
         return True
-
+    
    
     def get_assembly_code(self, s,f):
         pointerLC = hex(int(s.start,16))
@@ -102,11 +101,9 @@ class assembly:
             # if it is byte or word
             elif pointerLC in s.symbolTable and s.inst_ref[pointerLC] in d.opcode_3 and  self.check_res(pointerLC):
                 #print(s.objectCodes_all[i])
-                # if(s.objectCodes_all[i][2:] not in s.symblotTable):
                 self.wb_values.append(s.objectCodes_all[i][2:])
                 self.wb.append(pointerLC)
                 pointerLC = hex(int(pointerLC, 16) + int(len(s.objectCodes_all[i]) / 2))
-
                 
             #if it is res
             else:
@@ -119,8 +116,7 @@ class assembly:
             i += 1 
             
         self.modi_wb()
-
-   
+       
    
        
         
@@ -152,51 +148,62 @@ class assembly:
             
            
             return s.symbolTable[s.objectCodes_all[i][2:]]
-    
+        
+    def get_res_size(self,i):
+        differ=int(self.locationCounter[i+1],16)-int(self.locationCounter[i],16)
+        
+        return differ
+
             
     def create_assembly_lines(self,s):
       i=0
+      j=0
+      self.locationCounter.append(s.end) 
      
      
       while int(self.locationCounter[i],16)!= self.end:
          
           ref=self.check_labels(s,self.locationCounter[i])
          
-        
-          if(self.locationCounter[i] in self.wb and i< self.code_counter):
-                value="x'{}'".format(s.objectCodes_all[i])
-                self.assembly_lines.append([self.locationCounter[i],ref,'BYTE',value,s.objectCodes_all[i]])
+         
+          if(self.locationCounter[i] in self.wb and j< self.code_counter):
+                  value="x'{}'".format(s.objectCodes_all[j])
+                
+                  self.assembly_lines.append([self.locationCounter[i],ref,'BYTE',value,s.objectCodes_all[j]])
 
-
+                  if s.objectCodes_all[j][2:] in s.symbolTable:
+                          del s.symbolTable[s.objectCodes_all[j][2:] ]
+                  s.create_symbol_table()    
+                  j+=1
+                  
           elif(self.locationCounter[i] in self.res_index and i< self.code_counter):
-              self.assembly_lines.append([self.locationCounter[i],ref,'RESW'])
-          
-          elif(i< self.code_counter):
+              size=self.get_res_size(i)
+              self.assembly_lines.append([self.locationCounter[i],ref,'RESB',size])
+           
+          elif(j< self.code_counter):
               
-              instruction=self.get_instruction_name(s,i)
-              label=self.get_labels(s,i)
-              self.assembly_lines.append([self.locationCounter[i],ref,instruction, label ,s.objectCodes_all[i]])
+              instruction=self.get_instruction_name(s,j)
+              label=self.get_labels(s,j)
+              self.assembly_lines.append([self.locationCounter[i],ref,instruction, label ,s.objectCodes_all[j]])
+              j+=1
 
           i+=1
              
-      
+
     def modi_wb(self):
         i = 0
-        # print(self.wb_values)
-        # print(self.wb)
+        
         while i < len(self.wb_values):
             if self.wb_values[i] in self.locationCounter:
-                # print(self.wb_values[i] , " value")
+                
                 try:
                     self.wb.remove(self.wb_values[i])
-                    # print(f"After removal - self.wb: {self.wb}")
+                    
                 except ValueError:
                     print(f"ValueError: {self.wb_values[i]} not found in self.wb")
                  
             i += 1
-            # print(self.wb)
-
-
+            
     
    
     
