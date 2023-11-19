@@ -3,7 +3,7 @@ import dic as d
 class File :
     def  __init__(self):
         
-        self.hte_path = 'HTE.txt'
+        self.hte_path = 'HTE2.txt'
         self.conten=0
         self.lines=0
         
@@ -97,12 +97,23 @@ class Symbol:
             return oc in d.opcode_3
         return False
         
-
-    
+    # indexing check -> ,x
+    def check_indexing(self, val):
+        reference = val
+        bit_1_2 = hex(int(reference[:2], 16))[2:]
+        bit_3 = int(reference[2], 16)
+        if bit_3 >= 8:
+            reference = int(reference[2:], 16)
+            reference = hex(reference - 32768).upper()
+            reference = reference[2:]
+            reference = str(bit_1_2) + reference
+            
+        return reference
     def get_trecord_objectCode(self,f, j):
         start = f.lines[j][3:7]
         end = hex(int(start, 16) + int(f.lines[j][7:9], 16)).upper()
         end = end[2:]
+        end = end.zfill(4)
         objcodes = f.lines[j][9:-1]
         
         self.recordLimits.append([start, end])
@@ -120,17 +131,17 @@ class Symbol:
                 self.all_opcodes.append(objcodes[i:i+2])
                 i = i+2
             elif self.check_imd() and notDefine == 0:
-                print(objcodes[i:i+6],"-> ", "imm")
-
+                # print(objcodes[i:i+6],"-> ", "imm")
                 self.objectCodes_all.append(objcodes[i:i+6])
                 self.objcode_3_imm.append(objcodes[i:i+6])
                 self.all_opcodes.append(objcodes[i:i+2])
                 # print(int(self.opCode, 16) -1)
                 i = i+6
             elif self.check_dic() and notDefine == 0:
-                print(objcodes[i:i+6],"-> ", "dic   ")
+                # print(objcodes[i:i+6],"-> ", "dic   ")
+                reference = self.check_indexing(objcodes[i:i+6])
                 self.objectCodes_all.append(objcodes[i:i+6])
-                self.objcode_3.append(objcodes[i:i+6])
+                self.objcode_3.append(reference)
                 self.all_opcodes.append(objcodes[i:i+2])
                 i = i+6
             else:
@@ -168,4 +179,15 @@ class Symbol:
 def call_objectcode(f,s):
     for i in range (1 ,len(f.lines)-1): 
         s.get_trecord_objectCode(f,i)   
-     
+    # start = int(f.lines[len(f.lines)-2][3:7], 16)
+    # length = int(f.lines[len(f.lines)-2][7:9], 16)
+    # end = hex(start + length).upper()
+    # end = end[2:]
+    # end = end.zfill(4)
+    start_2 = int(f.lines[0][7:13], 16)
+    length_2 = int(f.lines[0][13:19], 16)
+    end_2 = hex(start_2 + length_2).upper()
+    end_2 = end_2[2:]
+    end_2 = end_2.zfill(4)
+    s.recordLimits.append([end_2
+, 0])

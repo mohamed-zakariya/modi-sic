@@ -52,9 +52,8 @@ class assembly:
                 lower_limit = int(s.recordLimits[i][1], 16)
                 upper_limit = int(s.recordLimits[i+1][0], 16)
                 value = int(key, 16)
-                
             
-                if(lower_limit <= value < upper_limit)  and key in s.inst_ref and key not in self.reswb:
+                if(lower_limit <= value < upper_limit)  and key in s.inst_ref:
                     self.reswb.append([key, s.recordLimits[i+1][0]])
                     break
                 i += 1
@@ -62,9 +61,8 @@ class assembly:
         unique_data = list(set(tuple(row) for row in self.reswb))   
         unique_data = [list(row) for row in unique_data]
         self.reswb = sorted(unique_data, key=lambda x: int(x[0], 16)) 
-      
     def get_res_index(self):
-        self.res_index=[sublist[0] for sublist in self.reswb]    
+        self.res_index=[sublist[0] for sublist in self.reswb]   
 
     def check_res(self, target_value):
         i = 0
@@ -77,20 +75,24 @@ class assembly:
    
     def get_assembly_code(self, s,f):
         pointerLC = hex(int(s.start,16))
-        pointerLC = pointerLC[2:]
+        pointerLC = pointerLC[2:].upper()
+        pointerLC = pointerLC.zfill(4)
         
         self.locationCounter.append(pointerLC)
-
+        self.create_first_assembly_line(s)
         self.save_objectCodes(s)
         self.get_resw(s)
         self.get_res_index()
+        self.end = hex(self.end).upper()
+        self.end = self.end[2:]
         
+        # print(self.end, "end ->>")
         i = 0
        
-        while i < self.code_counter:
+        while pointerLC <= self.end:
             
             # not a ref and format 1 will count 1    
-            if pointerLC not in s.symbolTable and s.objectCodes_all[i] in s.objcode_1:
+            if pointerLC not in s.symbolTable and i < self.code_counter and s.objectCodes_all[i] in s.objcode_1:
                 pointerLC = hex(int(pointerLC, 16) +1)
             
 
@@ -99,7 +101,7 @@ class assembly:
                 pointerLC = hex(int(pointerLC, 16) + 3)
 
             # if it is byte or word
-            elif pointerLC in s.symbolTable and s.inst_ref[pointerLC] in d.opcode_3 and  self.check_res(pointerLC):
+            elif pointerLC in s.symbolTable and i < self.code_counter and  s.inst_ref[pointerLC] in d.opcode_3 and  self.check_res(pointerLC):
                 # print("here", s.objectCodes_all[i][2:])
                 self.wb_values.append(s.objectCodes_all[i][2:])
                 self.wb.append(pointerLC)
@@ -110,8 +112,10 @@ class assembly:
                 pointerLC = hex(int(pointerLC, 16) + int(self.get_resw_element()))
                 #print(pointerLC)
                 i -=1
-
+            pointerLC = hex(int(pointerLC, 16))
             pointerLC = pointerLC[2:].upper()
+            pointerLC = pointerLC.zfill(4)
+
             self.locationCounter.append(pointerLC)
             i += 1 
             
@@ -121,15 +125,15 @@ class assembly:
        
         
     def create_first_assembly_line(self,s):
-        self.assembly_lines.append(['0',s.programName,'START',s.start])
-        self.lines_number=int(s.start,16)
+        self.assembly_lines.append(['0',s.programName ,'START',s.start, "None"])
        
         self.end=int(s.end,16)
-        #self.end=hex(self.end)[2:]
         
+    def create_last_assembly_line(self,s):
+        self.assembly_lines.append([self.locationCounter[-2],"None" ,'END', s.start, "None"])
 
     def check_labels(self,s,current_line):
-        if current_line in s.symbolTable:  
+        if current_line in s.symbolTable:
                    
             return s.symbolTable[current_line]  
         
@@ -143,53 +147,78 @@ class assembly:
          
          
     def get_labels(self,s,i):
-       
-        if s.objectCodes_all[i][2:] in s.symbolTable:
-            
-           
-            return s.symbolTable[s.objectCodes_all[i][2:]]
+        value = s.check_indexing(s.objectCodes_all[i])
+        value = value[2:]
+        if value in s.symbolTable:
+            return s.symbolTable[value]
         
     def get_res_size(self,i):
         differ=int(self.locationCounter[i+1],16)-int(self.locationCounter[i],16)
         
         return differ
 
+    # indexing check -> ,x
+    def check_indexing(self, s, i):
+        value = s.objectCodes_all[i]
+        bit_1 = int(value[2], 16)
+        return bit_1 >= 8
+    
             
     def create_assembly_lines(self,s):
-      i=0
-      j=0
-      self.locationCounter.append(s.end) 
-     
-     
-      while int(self.locationCounter[i],16)!= self.end:
-         
-          ref=self.check_labels(s,self.locationCounter[i])
-         
-         
-          if(self.locationCounter[i] in self.wb and j< self.code_counter):
-                value="x'{}'".format(s.objectCodes_all[j])
-                
-                self.assembly_lines.append([self.locationCounter[i],ref,'BYTE',value,s.objectCodes_all[j]])
+        i=0
+        j=0
+        self.locationCounter.append(s.end) 
+        self.locationCounter.append("000")    
+        print(self.locationCounter)
+        print("\n")
+        while self.locationCounter[i] != "000":
+            ref=self.check_labels(s,self.locationCounter[i])
 
-                if s.objectCodes_all[j][2:] in s.symbolTable:
-                    del s.symbolTable[s.objectCodes_all[j][2:] ]
-                s.create_symbol_table()    
-                j+=1
-                  
-          elif(self.locationCounter[i] in self.res_index and i< self.code_counter):
-              size=self.get_res_size(i)
-              self.assembly_lines.append([self.locationCounter[i],ref,'RESB',size])
-           
-          elif(j< self.code_counter):
-              
-              instruction=self.get_instruction_name(s,j)
-              label=self.get_labels(s,j)
-              self.assembly_lines.append([self.locationCounter[i],ref,instruction, label ,s.objectCodes_all[j]])
-              j+=1
+            lc = self.locationCounter[i]
+            
+            if(self.locationCounter[i] in self.wb and j< self.code_counter):
+                    value="x'{}'".format(s.objectCodes_all[j])
+                    value_int = int(s.objectCodes_all[j], 16)
+                    # print(self.locationCounter[i], "here 1")
 
-          i+=1
-             
+                    self.assembly_lines.append([lc ,ref,'WORD',value_int,s.objectCodes_all[j]])
 
+                    if s.objectCodes_all[j][2:] in s.symbolTable:
+                        del s.symbolTable[s.objectCodes_all[j][2:] ]
+                    s.create_symbol_table()    
+                    j+=1
+                    
+            elif(self.locationCounter[i] in self.res_index):
+                # print(self.locationCounter[i], "here 2")
+                size=self.get_res_size(i)
+                self.assembly_lines.append([lc,ref,'RESB', "None",size])
+            
+            elif(j< self.code_counter):
+                # print(self.locationCounter[i], "here 3")
+                instruction=self.get_instruction_name(s,j)
+                label= str(self.get_labels(s,j))
+                if self.check_indexing(s, j): 
+                    self.assembly_lines.append([lc, ref,instruction, label+",x" ,s.objectCodes_all[j]])
+                else:
+                    self.assembly_lines.append([lc, ref,instruction, label ,s.objectCodes_all[j]])
+                j+=1  
+            i+=1
+        self.create_last_assembly_line(s)     
+    
+    def create_assembly_table(self):
+       
+        with open(self.assembly_path, 'w') as file2:
+            file2.write("Location Counter\tLabel\tInstruction\t  Reference\t   ObjectCode\n")
+            for i in range(len(self.assembly_lines)):
+                file2.write(f"{str(self.assembly_lines[i][0]):<20}\t{str(self.assembly_lines[i][1]):<10}"
+                            f"\t{str(self.assembly_lines[i][2]):<15}\t{str(self.assembly_lines[i][3]):<15}"
+                            f"\t{str(self.assembly_lines[i][4])}\n")
+
+    # Additional line break for better readability
+            file2.write("\n")
+
+    
+    
     def modi_wb(self):
         i = 0
         

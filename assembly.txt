@@ -1,0 +1,18 @@
+Location Counter	Label	Instruction	  Reference	   ObjectCode
+0                   	COPY      	START          	0              	None
+0000                	ref7      	STL            	ref0           	140021
+0003                	ref8      	LDA            	ref1           	000024
+0006                	None      	COMP           	ref2           	28001B
+0009                	None      	JEQ            	ref3           	300012
+000C                	None      	LDA            	ref4           	000018
+000F                	None      	STA            	ref5           	0C0027
+0012                	ref3      	LDA            	ref6           	00001E
+0015                	None      	STA            	ref1           	0C0024
+0018                	ref4      	WORD           	4542278        	454F46
+001B                	ref2      	WORD           	0              	000000
+001E                	ref6      	WORD           	3              	000003
+0021                	ref0      	RESB           	None           	3
+0024                	ref1      	RESB           	None           	3
+0027                	ref5      	RESB           	None           	4096
+1027                	None      	END            	0              	None
+
