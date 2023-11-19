@@ -13,7 +13,7 @@ def mainfun(f,s, assem):
     assem.get_assembly_code(s, f)
     assem.create_assembly_lines(s)
     assem.create_assembly_table()
-    print(assem.assembly_lines)
+    #print(assem.assembly_lines)
 if __name__ == '__main__':
    
         f=st.File()

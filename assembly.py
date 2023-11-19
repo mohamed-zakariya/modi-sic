@@ -12,7 +12,6 @@ class assembly:
         self.code_counter=0
         self.assembly_lines=[]
         self.lines_number=0
-        self.flaf_3=True
         self.end=0
         self.assemblyTable = []
         self.wb = []
@@ -132,10 +131,10 @@ class assembly:
         
     def get_instruction_name(self,s,i):
          if s.all_opcodes[i] in d.opcode_1:
-           self.flaf_3=False
+          
            return d.opcode_1[s.all_opcodes[i]]
          elif s.all_opcodes[i] in d.opcode_3:
-           self.flaf_3=True
+          
            return d.opcode_3[s.all_opcodes[i]]
          
          
@@ -161,27 +160,24 @@ class assembly:
         j=0
         self.locationCounter.append(s.end) 
         self.locationCounter.append("000")    
-        print(self.locationCounter)
-        print("\n")
+        #print(s.symbolTable)
+        self.modifiy_symbol_table(s)
+        #print(s.symbolTable)
         while self.locationCounter[i] != "000":
             ref=self.check_labels(s,self.locationCounter[i])
 
             lc = self.locationCounter[i]
             
             if(self.locationCounter[i] in self.wb and j< self.code_counter):
-                    value="x'{}'".format(s.objectCodes_all[j])
+                   
                     value_int = int(s.objectCodes_all[j], 16)
 
                     self.assembly_lines.append([lc ,ref,'WORD',value_int,s.objectCodes_all[j]])
-
-                    if s.objectCodes_all[j][2:] in s.symbolTable:
-                        del s.symbolTable[s.objectCodes_all[j][2:] ]
-                    s.create_symbol_table()    
                     j+=1
                     
             elif(self.locationCounter[i] in self.res_index):
                 size=self.get_res_size(i)
-                self.assembly_lines.append([lc,ref,'RESB', "None",size])
+                self.assembly_lines.append([lc,ref,'RESB',size, "None"])
             
             elif(j< self.code_counter):
                 instruction=self.get_instruction_name(s,j)
@@ -222,9 +218,27 @@ class assembly:
             i += 1
             
     
-   
-    
+    def modifiy_symbol_table(self,s):
+        i=0
+        j=0
+        print(self.wb)
+        while self.locationCounter[i] != "000":    
+            if(self.locationCounter[i] in self.wb and j< self.code_counter):
+                    print("location",self.locationCounter[i])
+                    print("befor", s.objectCodes_all[j][2:]) 
+                    if s.objectCodes_all[j][2:] in s.symbolTable:
+                            #print(j)
+                            print("after", s.objectCodes_all[j][2:])
+                            del s.symbolTable[s.objectCodes_all[j][2:] ]
+                            
+            elif(self.locationCounter[i] in self.res_index): 
+                i+=1 
+                continue
 
+            s.create_symbol_table()                        
+            i+=1
+            j+=1
+        print(i)
 
 
         

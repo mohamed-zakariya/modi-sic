@@ -11,7 +11,7 @@ class File :
     def open_file(self):
         with open(self.hte_path, 'r') as file:
             self.content = file.read()
-            # print(content[0])
+           
             file.seek(0)
             self.lines = file.readlines()   
 
@@ -123,7 +123,7 @@ class Symbol:
         while i < len(objcodes):
             self.opCode = objcodes[i:i+2]
            
-            # print(opCode, ' ->', i, '->', )
+            
 
             if self.check_Format1() and notDefine == 0:
                 self.objectCodes_all.append(self.opCode)
@@ -131,14 +131,14 @@ class Symbol:
                 self.all_opcodes.append(objcodes[i:i+2])
                 i = i+2
             elif self.check_imd() and notDefine == 0:
-                # print(objcodes[i:i+6],"-> ", "imm")
+               
                 self.objectCodes_all.append(objcodes[i:i+6])
                 self.objcode_3_imm.append(objcodes[i:i+6])
                 self.all_opcodes.append(objcodes[i:i+2])
-                # print(int(self.opCode, 16) -1)
+                
                 i = i+6
             elif self.check_dic() and notDefine == 0:
-                # print(objcodes[i:i+6],"-> ", "dic   ")
+               
                 reference = self.check_indexing(objcodes[i:i+6])
                 self.objectCodes_all.append(objcodes[i:i+6])
                 self.objcode_3.append(reference)
@@ -148,8 +148,6 @@ class Symbol:
                 i = i+6
 
                
-            
-    #   and hex(int(self.opCode, 16) -1) in d.opCode_j
 
     def get_trecord_symbolTable(self):
         
@@ -185,5 +183,4 @@ def call_objectcode(f,s):
     end_2 = hex(start_2 + length_2).upper()
     end_2 = end_2[2:]
     end_2 = end_2.zfill(4)
-    s.recordLimits.append([end_2
-, 0])
+    s.recordLimits.append([end_2, 0])
