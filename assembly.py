@@ -86,31 +86,24 @@ class assembly:
         self.end = hex(self.end).upper()
         self.end = self.end[2:]
         
-        # print(self.end, "end ->>")
         i = 0
        
         while pointerLC <= self.end:
             
-            # not a ref and format 1 will count 1    
             if pointerLC not in s.symbolTable and i < self.code_counter and s.objectCodes_all[i] in s.objcode_1:
                 pointerLC = hex(int(pointerLC, 16) +1)
             
 
-            #if it is jump + 3
             elif pointerLC not in s.symbolTable  or (pointerLC in s.symbolTable and s.inst_ref[pointerLC] in d.opCode_j):
                 pointerLC = hex(int(pointerLC, 16) + 3)
 
-            # if it is byte or word
             elif pointerLC in s.symbolTable and i < self.code_counter and  s.inst_ref[pointerLC] in d.opcode_3 and  self.check_res(pointerLC):
-                # print("here", s.objectCodes_all[i][2:])
                 self.wb_values.append(s.objectCodes_all[i][2:])
                 self.wb.append(pointerLC)
                 pointerLC = hex(int(pointerLC, 16) + int(len(s.objectCodes_all[i]) / 2))
                 
-            #if it is res
             else:
                 pointerLC = hex(int(pointerLC, 16) + int(self.get_resw_element()))
-                #print(pointerLC)
                 i -=1
             pointerLC = hex(int(pointerLC, 16))
             pointerLC = pointerLC[2:].upper()
@@ -157,7 +150,6 @@ class assembly:
         
         return differ
 
-    # indexing check -> ,x
     def check_indexing(self, s, i):
         value = s.objectCodes_all[i]
         bit_1 = int(value[2], 16)
@@ -179,7 +171,6 @@ class assembly:
             if(self.locationCounter[i] in self.wb and j< self.code_counter):
                     value="x'{}'".format(s.objectCodes_all[j])
                     value_int = int(s.objectCodes_all[j], 16)
-                    # print(self.locationCounter[i], "here 1")
 
                     self.assembly_lines.append([lc ,ref,'WORD',value_int,s.objectCodes_all[j]])
 
@@ -189,12 +180,10 @@ class assembly:
                     j+=1
                     
             elif(self.locationCounter[i] in self.res_index):
-                # print(self.locationCounter[i], "here 2")
                 size=self.get_res_size(i)
                 self.assembly_lines.append([lc,ref,'RESB', "None",size])
             
             elif(j< self.code_counter):
-                # print(self.locationCounter[i], "here 3")
                 instruction=self.get_instruction_name(s,j)
                 label= str(self.get_labels(s,j))
                 if self.check_indexing(s, j): 
@@ -208,13 +197,12 @@ class assembly:
     def create_assembly_table(self):
        
         with open(self.assembly_path, 'w') as file2:
-            file2.write("Location Counter\tLabel\tInstruction\t  Reference\t   ObjectCode\n")
+            file2.write("Location Counter\tLabel\t\tInstruction\t    Reference\t    ObjectCode\n")
             for i in range(len(self.assembly_lines)):
-                file2.write(f"{str(self.assembly_lines[i][0]):<20}\t{str(self.assembly_lines[i][1]):<10}"
-                            f"\t{str(self.assembly_lines[i][2]):<15}\t{str(self.assembly_lines[i][3]):<15}"
+                file2.write(f"{str(self.assembly_lines[i][0]):<19}\t{str(self.assembly_lines[i][1]):<10}"
+                            f"\t{str(self.assembly_lines[i][2]):<12}\t{str(self.assembly_lines[i][3]):<12}"
                             f"\t{str(self.assembly_lines[i][4])}\n")
 
-    # Additional line break for better readability
             file2.write("\n")
 
     

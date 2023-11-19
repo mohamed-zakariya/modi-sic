@@ -10,7 +10,6 @@ def mainfun(f,s, assem):
     st.call_objectcode(f,s)
     s.get_trecord_symbolTable()
     s.create_symbol_table()
-    # assem.create_first_assembly_line(s)
     assem.get_assembly_code(s, f)
     assem.create_assembly_lines(s)
     assem.create_assembly_table()

@@ -3,7 +3,7 @@ import dic as d
 class File :
     def  __init__(self):
         
-        self.hte_path = 'HTE2.txt'
+        self.hte_path = 'HTE.txt'
         self.conten=0
         self.lines=0
         
@@ -179,11 +179,7 @@ class Symbol:
 def call_objectcode(f,s):
     for i in range (1 ,len(f.lines)-1): 
         s.get_trecord_objectCode(f,i)   
-    # start = int(f.lines[len(f.lines)-2][3:7], 16)
-    # length = int(f.lines[len(f.lines)-2][7:9], 16)
-    # end = hex(start + length).upper()
-    # end = end[2:]
-    # end = end.zfill(4)
+        
     start_2 = int(f.lines[0][7:13], 16)
     length_2 = int(f.lines[0][13:19], 16)
     end_2 = hex(start_2 + length_2).upper()
