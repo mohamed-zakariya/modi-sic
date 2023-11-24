@@ -69,10 +69,5 @@ To observe the functionality of the `main.py` script, follow these step-by-step 
   - Assembly code's dependency on the symbol table for address references.
   - Synchronization challenges with changes in the symbol table during execution.
 
-Feel free to explore each script and contribute to the development of this project. If you have any questions or encounter issues, please open an [issue](https://github.com/your-username/your-repository/issues).
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 
 
