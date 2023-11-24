@@ -4,7 +4,7 @@ import symbolTable as st
 
 class assembly:    
     def __init__(self):
-        self.assembly_path = "assembly.txt"
+        self.assembly_path = "Outputs/assembly.txt"
         self.locationCounter = []
         self.start_t_record={}
         self.wb = []
@@ -60,6 +60,7 @@ class assembly:
         unique_data = list(set(tuple(row) for row in self.reswb))   
         unique_data = [list(row) for row in unique_data]
         self.reswb = sorted(unique_data, key=lambda x: int(x[0], 16)) 
+        
     def get_res_index(self):
         self.res_index=[sublist[0] for sublist in self.reswb]   
 
@@ -172,7 +173,7 @@ class assembly:
                    
                     value_int = int(s.objectCodes_all[j], 16)
 
-                    self.assembly_lines.append([lc ,ref,'WORD',value_int,s.objectCodes_all[j]])
+                    self.assembly_lines.append([lc ,ref,'BYTE',"x'"+s.objectCodes_all[j]+"'",s.objectCodes_all[j]])
                     j+=1
                     
             elif(self.locationCounter[i] in self.res_index):

@@ -1,4 +1,4 @@
-Location Counter	Label		Instruction	    Reference	    ObjectCode
+Location Counter	Label		Instruction	Reference	ObjectCode
 0                  	COPY      	START       	1000        	None
 1000               	None      	STL         	ref0        	141033
 1003               	ref6      	JSUB        	ref1        	482039
@@ -14,9 +14,9 @@ Location Counter	Label		Instruction	    Reference	    ObjectCode
 1021               	None      	JSUB        	ref5        	482061
 1024               	None      	LDL         	ref0        	081033
 1027               	None      	RSUB        	None        	4C0000
-102A               	ref7      	WORD        	4542278     	454F46
-102D               	ref9      	WORD        	3           	000003
-1030               	ref3      	WORD        	0           	000000
+102A               	ref7      	BYTE        	x'454F46'   	454F46
+102D               	ref9      	BYTE        	x'000003'   	000003
+1030               	ref3      	BYTE        	x'000000'   	000000
 1033               	ref0      	RESB        	3           	None
 1036               	ref2      	RESB        	3           	None
 1039               	ref8      	RESB        	4096        	None
@@ -32,8 +32,8 @@ Location Counter	Label		Instruction	    Reference	    ObjectCode
 2054               	None      	JLT         	ref13       	38203F
 2057               	ref14     	STX         	ref2        	101036
 205A               	None      	RSUB        	None        	4C0000
-205D               	ref12     	WORD        	244         	F4
-205E               	ref15     	WORD        	4096        	001000
+205D               	ref12     	BYTE        	x'F4'       	F4
+205E               	ref15     	BYTE        	x'001000'   	001000
 2061               	ref5      	LDX         	ref3        	041030
 2064               	ref18     	TD          	ref17       	E02079
 2067               	None      	JEQ         	ref18       	302064
@@ -42,6 +42,6 @@ Location Counter	Label		Instruction	    Reference	    ObjectCode
 2070               	None      	TIX         	ref2        	2C1036
 2073               	None      	JLT         	ref18       	382064
 2076               	None      	RSUB        	None        	4C0000
-2079               	ref17     	WORD        	5           	05
-207A               	None      	END         	1000        	None
+2079               	ref17     	BYTE        	x'0542'     	0542
+207B               	None      	END         	1000        	None
 

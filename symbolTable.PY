@@ -3,7 +3,7 @@ import dic as d
 class File :
     def  __init__(self):
         
-        self.hte_path = 'HTE.txt'
+        self.hte_path = 'Inputs/HTE.txt'
         self.conten=0
         self.lines=0
         
@@ -13,12 +13,11 @@ class File :
             self.content = file.read()
            
             file.seek(0)
-            self.lines = file.readlines()   
-
+            self.lines = file.readlines()
 
 class Symbol:
     def __init__(self):
-        self.symbolTable_path = "symbolTable.txt"
+        self.symbolTable_path = "Outputs/symbolTable.txt"
         self.programName=""
         self.start=0
         self.end=0
@@ -79,7 +78,7 @@ class Symbol:
     def check_Format1(self):
         return self.opCode in d.opcode_1
 
-    def check_dic(self):
+    def check_format3(self):
         return self.opCode in d.opcode_3
 
     def check_imd(self):
@@ -96,7 +95,7 @@ class Symbol:
            
             return oc in d.opcode_3
         return False
-        
+       
     # indexing check -> ,x
     def check_indexing(self, val):
         reference = val
@@ -116,6 +115,7 @@ class Symbol:
         end = end.zfill(4)
         objcodes = f.lines[j][9:-1]
         
+        
         self.recordLimits.append([start, end])
         i = 0
         notDefine = 0
@@ -123,21 +123,20 @@ class Symbol:
         while i < len(objcodes):
             self.opCode = objcodes[i:i+2]
            
-            
 
-            if self.check_Format1() and notDefine == 0:
+            if self.check_Format1():
                 self.objectCodes_all.append(self.opCode)
                 self.objcode_1.append(self.opCode)
                 self.all_opcodes.append(objcodes[i:i+2])
                 i = i+2
-            elif self.check_imd() and notDefine == 0:
+            elif self.check_imd():
                
                 self.objectCodes_all.append(objcodes[i:i+6])
                 self.objcode_3_imm.append(objcodes[i:i+6])
                 self.all_opcodes.append(objcodes[i:i+2])
                 
                 i = i+6
-            elif self.check_dic() and notDefine == 0:
+            elif self.check_format3():
                
                 reference = self.check_indexing(objcodes[i:i+6])
                 self.objectCodes_all.append(objcodes[i:i+6])
